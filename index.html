@@ -35,9 +35,9 @@
     }
     .enemy {
       position: absolute;
-      width: 40px;
-      height: 20px;
-      background-image: url('https://uxwing.com/wp-content/themes/uxwing/download/transportation-vehicle/cigarette-smoking-icon.png');
+      width: 48px;
+      height: 24px;
+      background-image: url('https://freesvg.org/storage/img/thumb/86856-cigarette.svg');
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
@@ -85,7 +85,7 @@
     function createEnemy() {
       const enemy = document.createElement('div');
       enemy.className = 'enemy';
-      enemy.style.left = Math.random() * 370 + 'px';
+      enemy.style.left = Math.random() * 352 + 'px'; // 調整寬度範圍適合菸的寬度
       enemy.style.top = '0px';
       game.appendChild(enemy);
       enemies.push(enemy);
@@ -126,9 +126,5 @@
       if (!gameOver) createEnemy();
     }, 1500);
 
-    setInterval(() => {
-      if (!gameOver) moveEnemies();
-    }, 30);
-  </script>
-</body>
-</html>
+    setInterval(() =>
+
