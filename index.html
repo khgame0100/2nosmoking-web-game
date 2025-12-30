@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>無菸環境小遊戲</title>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+    }
+    #game {
+      position: relative;
+      width: 400px;
+      height: 400px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      overflow: hidden;
+    }
+    #player {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #4caf50;
+      left: 180px;
+      top: 180px;
+      transition: left 0.1s, top 0.1s;
+    }
+    .enemy {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #f44336;
+    }
+    #info {
+      margin-top: 12px;
+      font-size: 16px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 6px 14px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>無菸環境小遊戲</h2>
+  <div id="game">
+    <div id="player"></div>
+  </div>
+  <div id="info">分數：<span id="score">0</span></div>
+  <button onclick="resetGame()">重新開始</button>
+
+  <script>
+    const game = document.getElementById('game');
+    const player = document.getElementById('player');
+    const scoreEl = document.getElementById('score');
+    let score = 0;
+    let enemies = [];
+    let gameOver = false;
+
+    game.addEventListener('click', (e) => {
+      if (gameOver) return;
+      const rect = game.getBoundingClientRect();
+      const x = e.clientX - rect.left - 20;
+      const y = e.clientY - rect.top - 20;
+      player.style.left = x + 'px';
+      player.style.top = y + 'px';
+      score++;
+      scoreEl.textContent = score;
+    });
+
+    function createEnemy() {
+      const enemy = document.createElement('div');
+      enemy.className = 'enemy';
+      enemy.style.left = Math.random() * 370 + 'px';
+      enemy.style.top = '0px';
+      game.appendChild(enemy);
+      enemies.push(enemy);
+    }
+
+    function moveEnemies() {
+      enemies.forEach((enemy) => {
+        const top = parseFloat(enemy.style.top);
+        enemy.style.top = top + 2 + 'px';
+
+        const er = enemy.getBoundingClientRect();
+        const pr = player.getBoundingClientRect();
+        if (
+          er.left < pr.right &&
+          er.right > pr.left &&
+          er.top < pr.bottom &&
+          er.bottom > pr.top
+        ) {
+          endGame();
+        }
+      });
+    }
+
+    function endGame() {
+      gameOver = true;
+      alert('遊戲結束！你的分數是 ' + score);
+    }
+
+    function resetGame() {
+      enemies.forEach(e => e.remove());
+      enemies = [];
+      score = 0;
+      scoreEl.textContent = 0;
+      gameOver = false;
+    }
+
+    setInterval(() => {
+      if (!gameOver) createEnemy();
+    }, 1500);
+
+    setInterval(() => {
+      if (!gameOver) moveEnemies();
+    }, 30);
+  </script>
+</body>
+</html>
