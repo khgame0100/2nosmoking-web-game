@@ -35,11 +35,18 @@
     }
     .enemy {
       position: absolute;
-      width: 30px;
-      height: 30px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       background: #f44336;
-    }
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+   }
     #info {
       margin-top: 12px;
       font-size: 16px;
@@ -83,6 +90,7 @@
     function createEnemy() {
       const enemy = document.createElement('div');
       enemy.className = 'enemy';
+      enemy.textContent = '菸';
       enemy.style.left = Math.random() * 370 + 'px';
       enemy.style.top = '0px';
       game.appendChild(enemy);
