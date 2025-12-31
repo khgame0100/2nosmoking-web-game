@@ -14,6 +14,7 @@
       font-family: Arial, sans-serif;
       background: #f5f7fa;
     }
+
     #game {
       position: relative;
       width: 400px;
@@ -23,114 +24,132 @@
       box-shadow: 0 8px 20px rgba(0,0,0,0.15);
       overflow: hidden;
     }
+
+    /* 玩家：吸菸者 */
     #player {
       position: absolute;
-      width: 40px;
-      height: 40px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
-      background: #4caf50;
-      left: 180px;
-      top: 180px;
-      transition: left 0.1s, top 0.1s;
-    }
-    .enemy {
-      position: absolute;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: #f44336;
-      
+      background: #e53935;
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
       display: flex;
       align-items: center;
       justify-content: center;
-   }
-    /* 在紅點上自動畫字 */
-    .enemy::after {
-      content: "菸";
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      line-height: 1;
-      pointer-events: none;
-   }
-    #info {
-      margin-top: 12px;
-      font-size: 16px;
+      text-align: center;
+      left: 175px;
+      top: 175px;
+      user-select: none;
     }
-    button {
+
+    /* 敵人：禁菸場所 */
+    .enemy {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #43a047;
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      user-select: none;
+    }
+
+    #info {
       margin-top: 10px;
-      padding: 6px 14px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
+      font-size: 16px;
     }
   </style>
 </head>
 <body>
+
   <h2>無菸環境小遊戲</h2>
+
   <div id="game">
-    <div id="player"></div>
+    <div id="player">吸菸者</div>
   </div>
-  <div id="info">分數：<span id="score">0</span></div>
-  <button onclick="resetGame()">重新開始</button>
+
+  <div id="info">
+    剩餘金額：NT$<span id="money">20000</span><br>
+    成功避開：<span id="score">0</span> 個禁菸場所
+  </div>
 
   <script>
     const game = document.getElementById('game');
     const player = document.getElementById('player');
+    const moneyEl = document.getElementById('money');
     const scoreEl = document.getElementById('score');
-    let score = 0;
+
+    let money = 20000;
+    let avoided = 0;
     let enemies = [];
     let gameOver = false;
 
+    // 點擊移動吸菸者
     game.addEventListener('click', (e) => {
       if (gameOver) return;
       const rect = game.getBoundingClientRect();
-      const x = e.clientX - rect.left - 20;
-      const y = e.clientY - rect.top - 20;
-      player.style.left = x + 'px';
-      player.style.top = y + 'px';
-      score++;
-      scoreEl.textContent = score;
+      player.style.left = (e.clientX - rect.left - 25) + 'px';
+      player.style.top = (e.clientY - rect.top - 25) + 'px';
     });
 
     function createEnemy() {
       const enemy = document.createElement('div');
       enemy.className = 'enemy';
-      enemy.style.left = Math.random() * 370 + 'px';
+      enemy.textContent = '禁菸場所';
+      enemy.style.left = Math.random() * 340 + 'px';
       enemy.style.top = '0px';
       game.appendChild(enemy);
       enemies.push(enemy);
     }
 
     function moveEnemies() {
-      enemies.forEach((enemy) => {
-        const top = parseFloat(enemy.style.top);
-        enemy.style.top = top + 2 + 'px';
+      enemies.forEach((enemy, index) => {
+        enemy.style.top = (enemy.offsetTop + 2) + 'px';
 
+        // 碰撞判定
         const er = enemy.getBoundingClientRect();
         const pr = player.getBoundingClientRect();
+
         if (
           er.left < pr.right &&
           er.right > pr.left &&
           er.top < pr.bottom &&
           er.bottom > pr.top
         ) {
-          endGame();
+          money -= 2000;
+          moneyEl.textContent = money;
+          enemy.remove();
+          enemies.splice(index, 1);
+
+          if (money <= 0) {
+            endGame();
+          }
+        }
+
+        // 成功避開
+        if (enemy.offsetTop > 400) {
+          avoided++;
+          scoreEl.textContent = avoided;
+          enemy.remove();
+          enemies.splice(index, 1);
         }
       });
     }
 
     function endGame() {
       gameOver = true;
-      alert('遊戲結束！你的分數是 ' + score);
-    }
-
-    function resetGame() {
-      enemies.forEach(e => e.remove());
-      enemies = [];
-      score = 0;
-      scoreEl.textContent = 0;
-      gameOver = false;
+      alert(
+        '遊戲結束！\n' +
+        '罰鍰已用盡。\n' +
+        '你成功避開 ' + avoided + ' 個禁菸場所。'
+      );
     }
 
     setInterval(() => {
@@ -141,6 +160,7 @@
       if (!gameOver) moveEnemies();
     }, 30);
   </script>
+
 </body>
 </html>
 
